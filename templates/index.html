@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Resume Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AI Resume Analyzer</h1>
+
+<form id="uploadForm">
+
+    <input type="file" name="resume" required>
+
+    <select name="role" required>
+        <option value="">Select Job Role</option>
+        <option value="sde">Software Developer</option>
+        <option value="data_analyst">Data Analyst</option>
+        <option value="ml_engineer">ML Engineer</option>
+    </select>
+
+    <button type="submit">Analyze Resume</button>
+
+</form>
+
+<div id="result"></div>
+
+<div class="progress">
+    <div id="bar"></div>
+</div>
+
+</div>
+
+<script>
+document.getElementById("uploadForm").onsubmit = async function(e){
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    const response = await fetch("/api/upload",{
+        method:"POST",
+        body:formData
+    });
+
+    const data = await response.json();
+
+    document.getElementById("bar").style.width = data.score + "%";
+
+    document.getElementById("result").innerHTML =
+    `
+    <h3>Match Score: ${data.score}%</h3>
+    <p><b>Matched Skills:</b> ${data.matched_skills.join(", ")}</p>
+    <p><b>Missing Skills:</b> ${data.missing_skills.join(", ")}</p>
+    <p><b>Recommendation:</b> ${data.recommendation}</p>
+    `;
+};
+</script>
+
+</body>
+</html>
